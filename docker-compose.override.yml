@@ -2,7 +2,7 @@ version: "2"
 services:
 
   dhis2-integration:
-    image: openlmis/dev:10
+    image: palladium/dhis2-integration
     ports:
       - "5005:5005"
       - "8080:8080"
