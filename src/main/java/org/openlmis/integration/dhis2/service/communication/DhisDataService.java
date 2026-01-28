@@ -171,7 +171,7 @@ public class DhisDataService {
     RequestParameters params = RequestParameters
         .init()
         .set("orgUnitIdScheme", "code")
-        .set("dataElementIdScheme", "name")
+        .set("dataElementIdScheme", "uid")
         .set("categoryOptionComboIdScheme", "name");
 
     URI uri = createUri(serverUrl + API_DATA_VALUE_SETS_URL, params);
