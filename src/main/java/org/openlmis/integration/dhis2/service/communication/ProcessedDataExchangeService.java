@@ -15,8 +15,6 @@
 
 package org.openlmis.integration.dhis2.service.communication;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -134,17 +132,10 @@ public class ProcessedDataExchangeService {
               calculatedIndicator);
       DataValueSet dataValueSet = buildDataValueSet(dhisDatasetId, formattedStartDate, orgUnit,
               dataValue);
-      ObjectMapper mapper = new ObjectMapper();
-      try {
-        LOGGER.error("Sending data value set: " + mapper.writeValueAsString(dataValueSet));
-      } catch (JsonProcessingException je) {
-        LOGGER.error("Failed to parse dataset payload to json", je);
-        LOGGER.error("Sending data value set: " + dataValueSet);
-      }
-
       DhisResponseBody dhisResponseBody = dhisDataService.sendDataValueSet(dataValueSet,
               server.getUrl(), server.getUsername(), server.getPassword());
-      LOGGER.error("DHIS2 response body: " + dhisResponseBody);
+      LOGGER.debug("Sending data value set: {}", dataValueSet);
+      LOGGER.debug("DHIS2 response body: {}", dhisResponseBody);
     }
   }
 

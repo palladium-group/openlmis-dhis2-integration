@@ -1,6 +1,5 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
-
     <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
         <syslogHost>${log.host:-log}</syslogHost>
         <port>${log.port:-514}</port>
