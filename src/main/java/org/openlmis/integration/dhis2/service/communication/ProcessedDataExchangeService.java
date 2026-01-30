@@ -87,6 +87,7 @@ public class ProcessedDataExchangeService {
     final String sourceTable = dataElement.getSource();
     final String indicator = dataElement.getIndicator();
     final String dhisDataElementId = dataElement.getElement();
+    final UUID serverId = schedule.getServer().getId();
 
     Dataset dataset = schedule.getDataset();
     final String dhisDatasetId = dataset.getDhisDatasetId();
@@ -115,6 +116,7 @@ public class ProcessedDataExchangeService {
     }
 
     List<String> orgUnits = sharedFacilityRepository.findAll().stream()
+            .filter(sf -> serverId.equals(sf.getServer().getId()))
             .map(SharedFacility::getCode)
             .collect(Collectors.toList());
 
