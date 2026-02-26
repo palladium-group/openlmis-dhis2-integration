@@ -216,4 +216,31 @@ public class StockmanagementRepository {
             .getSingleResult().toString());
   }
 
+  /**
+   * Retrieves sum of all damaged stock from stockmanagement for a given period.
+   */
+  public Double findDamaged(@Param(START_DATE) ZonedDateTime startDate,
+                            @Param(END_DATE) ZonedDateTime endDate,
+                            @Param(ORDERABLE) String orderable,
+                            @Param(FACILITY) String facility) {
+
+    Query query = entityManager.createNativeQuery(
+            "select COALESCE(SUM(line_items.quantity), 0) as quantity "
+                    + "from stockmanagement.stock_card_line_items line_items "
+                    + "join stockmanagement.stock_cards cards ON cards.id = line_items.stockcardid "
+                    + "join stockmanagement.stock_card_line_item_reasons reasons "
+                    + "ON reasons.id = line_items.reasonid "
+                    + "join referencedata.orderables products ON products.id = cards.orderableid "
+                    + "where LOWER(reasons.name) LIKE '%damage%' "
+                    + "AND line_items.occurred_date >= :start_date "
+                    + "AND line_items.occurred_date < :end_date "
+                    + "AND products.fullproductname = :orderable "
+                    + "AND facilities.code = :facility "
+    );
+    return Double.parseDouble(query.setParameter(START_DATE, startDate)
+            .setParameter(END_DATE, endDate)
+            .setParameter(ORDERABLE, orderable)
+            .setParameter(FACILITY, facility)
+            .getSingleResult().toString());
+  }
 }

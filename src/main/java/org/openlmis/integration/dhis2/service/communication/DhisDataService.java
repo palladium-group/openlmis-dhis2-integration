@@ -122,7 +122,8 @@ public class DhisDataService {
 
     RequestParameters params = RequestParameters
             .init()
-            .set("fields", "id,name,code");
+            .set("fields", "id,name,code")
+            .set("paging", false);
 
     URI uri = createUri(serverUrl + API_ORG_UNITS_URL, params);
 

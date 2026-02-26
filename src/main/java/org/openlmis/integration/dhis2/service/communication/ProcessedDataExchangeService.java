@@ -111,6 +111,7 @@ public class ProcessedDataExchangeService {
                 DEFAULT_DHIS_PERIOD);
       }
     } else {
+      // TODO create a custom range from request params
       periodRange = periodGeneratorService.generateRange(periodEnum, timeOffset);
       formattedStartDate = periodGeneratorService.formatDate(periodRange.getFirst(), periodEnum);
     }
@@ -134,9 +135,9 @@ public class ProcessedDataExchangeService {
               calculatedIndicator);
       DataValueSet dataValueSet = buildDataValueSet(dhisDatasetId, formattedStartDate, orgUnit,
               dataValue);
+      LOGGER.debug("Sending data value set: {}", dataValueSet);
       DhisResponseBody dhisResponseBody = dhisDataService.sendDataValueSet(dataValueSet,
               server.getUrl(), server.getUsername(), server.getPassword());
-      LOGGER.debug("Sending data value set: {}", dataValueSet);
       LOGGER.debug("DHIS2 response body: {}", dhisResponseBody);
     }
   }

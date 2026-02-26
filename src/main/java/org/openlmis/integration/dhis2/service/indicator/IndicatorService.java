@@ -43,6 +43,9 @@ public class IndicatorService {
   @Autowired
   NegativeAdjustment negativeAdjustment;
 
+  @Autowired
+  DamagesBalance damagesBalance;
+
   /**
    * Counts quantity of items for a given indicator enumerator.
    *
@@ -79,6 +82,10 @@ public class IndicatorService {
                 source, period, orderable, facility);
         break;
       case ADJUSTMENTS_BY_REASON:
+        break;
+      case DAMAGES:
+        calculatedIndicator = damagesBalance.calculateValue(
+                source, period, orderable, facility);
         break;
       default:
         throw new ValidationMessageException(MessageKeys.ERROR_ENUMERATOR_NOT_EXIST);

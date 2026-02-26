@@ -60,6 +60,7 @@ public class SharedFacilitySynchronizer {
     LOGGER.debug("Refreshing shared facilities");
     PageDto<MinimalFacilityDto> refDataFacilitiesPage = referenceDataService.findAllFacilities();
     List<MinimalFacilityDto> refDataFacilities = refDataFacilitiesPage.getContent();
+    LOGGER.debug("Fetched {} facilities from OpenLMIS", refDataFacilities.size());
 
     List<Server> servers = serverRepository.findAll();
     for (Server server: servers) {
@@ -67,7 +68,7 @@ public class SharedFacilitySynchronizer {
       Set<SharedFacilityDto> allNotMatchingFacilities = new HashSet<>();
       List<OrganisationUnit> organisationUnits = dhisDataService.getDhisOrgUnits(
           server.getUrl(), server.getUsername(), server.getPassword());
-
+      LOGGER.debug("Fetched {} orgUnits from {}", organisationUnits.size(), server.getUrl());
       for (OrganisationUnit orgUnit: organisationUnits) {
         String orgUnitCode = orgUnit.getCode();
 
