@@ -243,4 +243,32 @@ public class StockmanagementRepository {
             .setParameter(FACILITY, facility)
             .getSingleResult().toString());
   }
+
+  /**
+   * Retrieves sum of all expired stock from stockmanagement for a given period.
+   */
+  public Double findExpired(@Param(START_DATE) ZonedDateTime startDate,
+                            @Param(END_DATE) ZonedDateTime endDate,
+                            @Param(ORDERABLE) String orderable,
+                            @Param(FACILITY) String facility) {
+
+    Query query = entityManager.createNativeQuery(
+        "select COALESCE(SUM(line_items.quantity), 0)  AS quantity "
+            + "FROM stockmanagement.stock_card_line_items line_items "
+            + "JOIN stockmanagement.stock_cards cards ON cards.id = line_items.stockcardid "
+            + "JOIN stockmanagement.stock_card_line_item_reasons reasons "
+            + "ON reasons.id = line_items.reasonid "
+            + "JOIN referencedata.orderables products ON products.id = cards.orderableid "
+            + "WHERE LOWER(reasons.name) LIKE '%expir%' "
+            + "AND line_items.occurred_date >= :start_date "
+            + "AND line_items.occurred_date < :end_date "
+            + "AND products.fullproductname = :orderable "
+            + "AND facilities.code = :facility"
+    );
+    return Double.parseDouble(query.setParameter(START_DATE, startDate)
+        .setParameter(END_DATE, endDate)
+        .setParameter(ORDERABLE, orderable)
+        .setParameter(FACILITY, facility)
+        .getSingleResult().toString());
+  }
 }

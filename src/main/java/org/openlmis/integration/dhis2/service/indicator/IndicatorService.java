@@ -18,9 +18,11 @@ package org.openlmis.integration.dhis2.service.indicator;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.openlmis.integration.dhis2.domain.enumerator.IndicatorEnum;
-import org.openlmis.integration.dhis2.exception.ValidationMessageException;
-import org.openlmis.integration.dhis2.i18n.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -28,23 +30,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class IndicatorService {
 
-  @Autowired
-  OpeningBalance openingBalance;
+  private final Map<String, IndicatorSupplier> supplierMap;
 
   @Autowired
-  ClosingBalance closingBalance;
-
-  @Autowired
-  ReceivedBalance receivedBalance;
-
-  @Autowired
-  PositiveAdjustment positiveAdjustment;
-
-  @Autowired
-  NegativeAdjustment negativeAdjustment;
-
-  @Autowired
-  DamagesBalance damagesBalance;
+  public IndicatorService(List<IndicatorSupplier> suppliers) {
+    supplierMap = suppliers.stream()
+            .collect(Collectors.toMap(IndicatorSupplier::getIndicatorName, Function.identity()));
+  }
 
   /**
    * Counts quantity of items for a given indicator enumerator.
@@ -55,43 +47,11 @@ public class IndicatorService {
    */
   public BigDecimal generate(String source, IndicatorEnum indicatorEnum, Pair<ZonedDateTime,
           ZonedDateTime> period, String orderable, String facility) {
-    BigDecimal calculatedIndicator = new BigDecimal("0", MathContext.DECIMAL64);
-    switch (indicatorEnum) {
-      case OPENING_BALANCE:
-        calculatedIndicator = openingBalance.calculateValue(
-                source, period, orderable, facility);
-        break;
-      case RECEIVED:
-        calculatedIndicator = receivedBalance.calculateValue(
-                source, period, orderable, facility);
-        break;
-      case CLOSING_BALANCE:
-        calculatedIndicator = closingBalance.calculateValue(
-                source, period, orderable, facility);
-        break;
-      case CCE_ALLOCATED:
-        break;
-      case CCE_OPERATIONAL:
-        break;
-      case NEGATIVE_ADJUSTMENTS:
-        calculatedIndicator = negativeAdjustment.calculateValue(
-                source, period, orderable, facility);
-        break;
-      case POSITIVE_ADJUSTMENTS:
-        calculatedIndicator = positiveAdjustment.calculateValue(
-                source, period, orderable, facility);
-        break;
-      case ADJUSTMENTS_BY_REASON:
-        break;
-      case DAMAGES:
-        calculatedIndicator = damagesBalance.calculateValue(
-                source, period, orderable, facility);
-        break;
-      default:
-        throw new ValidationMessageException(MessageKeys.ERROR_ENUMERATOR_NOT_EXIST);
+    IndicatorSupplier supplier = supplierMap.get(indicatorEnum.toString());
+    if (supplier == null) {
+      return new BigDecimal("0", MathContext.DECIMAL64);
     }
-
-    return calculatedIndicator;
+    return supplier.calculateValue(source, period, orderable, facility);
   }
 
   /**
