@@ -28,9 +28,9 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NegativeAdjustment implements IndicatorSupplier {
+public class ExpiredBalance implements IndicatorSupplier {
 
-  public static final String NAME = IndicatorEnum.NEGATIVE_ADJUSTMENTS.toString();
+  public static final String NAME = IndicatorEnum.EXPIRED.toString();
 
   @Autowired
   private StockmanagementRepository stockmanagementRepository;
@@ -40,19 +40,20 @@ public class NegativeAdjustment implements IndicatorSupplier {
   }
 
   /**
-   * Calculate negative adjustments.
+   * Calculate expired balance.
    */
+  @Override
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
-                                   String orderable, String facility) {
+                                   String facility, String orderable) {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
-      calculatedIndicator = stockmanagementRepository.findNegativeAdjustments(
-              period.getFirst(), period.getSecond(), orderable, facility);
+      calculatedIndicator =
+          stockmanagementRepository.findExpired(period.getFirst(), period.getSecond(), orderable,
+              facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
-
     return new BigDecimal(calculatedIndicator.toString(), MathContext.DECIMAL64);
   }
-
 }
+
