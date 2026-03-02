@@ -28,7 +28,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DamagesBalance implements IndicatorSupplier {
+public class Damaged implements IndicatorSupplier {
 
   public static final String NAME = IndicatorEnum.DAMAGES.toString();
 

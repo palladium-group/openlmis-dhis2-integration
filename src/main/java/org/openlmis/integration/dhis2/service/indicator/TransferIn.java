@@ -28,9 +28,9 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExpiredBalance implements IndicatorSupplier {
+public class TransferIn implements IndicatorSupplier {
 
-  public static final String NAME = IndicatorEnum.EXPIRED.toString();
+  public static final String NAME = IndicatorEnum.TRANSFER_IN.toString();
 
   @Autowired
   private StockmanagementRepository stockmanagementRepository;
@@ -40,7 +40,7 @@ public class ExpiredBalance implements IndicatorSupplier {
   }
 
   /**
-   * Calculate expired balance.
+   * Calculate transfer in balance.
    */
   @Override
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
@@ -48,12 +48,12 @@ public class ExpiredBalance implements IndicatorSupplier {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator =
-          stockmanagementRepository.findExpired(period.getFirst(), period.getSecond(), orderable,
-              facility);
+          stockmanagementRepository.findTransferIns(period.getFirst(), period.getSecond(),
+              orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
     return new BigDecimal(calculatedIndicator.toString(), MathContext.DECIMAL64);
   }
-}
 
+}
