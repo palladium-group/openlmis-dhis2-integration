@@ -22,43 +22,35 @@ import java.math.MathContext;
 import java.time.ZonedDateTime;
 import org.openlmis.integration.dhis2.domain.enumerator.IndicatorEnum;
 import org.openlmis.integration.dhis2.exception.ValidationMessageException;
-import org.openlmis.integration.dhis2.repository.indicator.RequisitionRepository;
-import org.openlmis.integration.dhis2.repository.indicator.StockBalancesRepository;
+import org.openlmis.integration.dhis2.repository.indicator.StockmanagementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OpeningBalance implements IndicatorSupplier {
+public class MonthlyConsumption implements IndicatorSupplier {
 
-  public static final String NAME = IndicatorEnum.OPENING_BALANCE.toString();
-
-  @Autowired
-  private RequisitionRepository requisitionRepository;
+  public static final String NAME = IndicatorEnum.MONTHLY_CONSUMPTION.toString();
 
   @Autowired
-  private StockBalancesRepository stockBalancesRepository;
+  private StockmanagementRepository stockmanagementRepository;
 
   public String getIndicatorName() {
     return NAME;
   }
 
   /**
-   * Calculate opening balance.
+   * Calculate consumed commodities.
    */
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
                                    String orderable, String facility) {
-    Long calculatedIndicator;
+    Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
-      calculatedIndicator = stockBalancesRepository.findOpeningBalance(
-              period.getFirst(), orderable, facility);
-    } else if (source.equals(REQUISITION)) {
-      calculatedIndicator = requisitionRepository.findOpeningBalance(
-              period.getFirst(), orderable, facility);
+      calculatedIndicator = stockmanagementRepository.findConsumed(
+          period.getFirst(), period.getSecond(),  orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
-
     return new BigDecimal(calculatedIndicator.toString(), MathContext.DECIMAL64);
   }
 

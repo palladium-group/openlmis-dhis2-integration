@@ -121,9 +121,9 @@ public class DhisDataService {
     String token = authService.obtainAccessToken(username, password, serverUrl);
 
     RequestParameters params = RequestParameters
-            .init()
-            .set("fields", "id,name,code")
-            .set("paging", false);
+        .init()
+        .set("fields", "id,name,code")
+        .set("paging", false);
 
     URI uri = createUri(serverUrl + API_ORG_UNITS_URL, params);
 

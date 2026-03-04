@@ -19,41 +19,41 @@ import static org.openlmis.integration.dhis2.i18n.MessageKeys.ERROR_ENUMERATOR_N
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.openlmis.integration.dhis2.domain.enumerator.IndicatorEnum;
 import org.openlmis.integration.dhis2.exception.ValidationMessageException;
-import org.openlmis.integration.dhis2.repository.indicator.StockmanagementRepository;
+import org.openlmis.integration.dhis2.repository.indicator.StockBalancesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Expired implements IndicatorSupplier {
+public class StockOnHand implements IndicatorSupplier {
 
-  public static final String NAME = IndicatorEnum.EXPIRED.toString();
+  public static final String NAME = IndicatorEnum.STOCK_ON_HAND.toString();
 
   @Autowired
-  private StockmanagementRepository stockmanagementRepository;
+  private StockBalancesRepository stockBalancesRepository;
 
   public String getIndicatorName() {
     return NAME;
   }
 
   /**
-   * Calculate expired balance.
+   * Calculate current stock on hand.
    */
-  @Override
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
-                                   String facility, String orderable) {
-    Double calculatedIndicator;
+                                   String orderable, String facility) {
+    Long calculatedIndicator;
+    ZonedDateTime currentDate = ZonedDateTime.now(ZoneId.systemDefault());
     if (source.equals(STOCKMANAGEMENT)) {
-      calculatedIndicator =
-          stockmanagementRepository.findExpired(period.getFirst(), period.getSecond(), orderable,
-              facility);
+      calculatedIndicator = stockBalancesRepository.findStockOnHand(
+          currentDate, orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
+
     return new BigDecimal(calculatedIndicator.toString(), MathContext.DECIMAL64);
   }
 }
-

@@ -34,79 +34,6 @@ public class StockmanagementRepository {
   @PersistenceContext
   EntityManager entityManager;
 
-  /**
-   * Retrieves opening balance from stockmanagement for a given period.
-   */
-  public Long findOpeningBalance(@Param(START_DATE) ZonedDateTime startDate,
-                                   @Param(ORDERABLE) String orderable,
-                                   @Param(FACILITY) String facility) {
-    Query query = entityManager.createNativeQuery(
-            "(SELECT cal.stockonhand "
-                    + "FROM stockmanagement.stock_card_line_items AS line_items "
-                    + "JOIN stockmanagement.stock_cards AS cards "
-                    + "ON line_items.stockcardid = cards.id "
-                    + "JOIN stockmanagement.stock_card_line_item_reasons AS reasons "
-                    + "ON reasons.id = line_items.reasonid "
-                    + "JOIN stockmanagement.calculated_stocks_on_hand AS cal "
-                    + "ON cal.stockcardid = cards.id "
-                    + "JOIN referencedata.orderables AS products "
-                    + "ON cards.orderableid = products.id "
-                    + "JOIN referencedata.facilities AS facilities "
-                    + "ON facilities.id = cards.facilityid "
-                    + "WHERE products.versionnumber = ( "
-                    + "SELECT MAX(versionnumber) FROM referencedata.orderables o2 "
-                    + "WHERE o2.id = products.id "
-                    + ") "
-                    + "AND line_items.occurreddate <= :startDate "
-                    + "AND products.fullproductname = :orderable  "
-                    + "AND facilities.code = :facility "
-                    + "ORDER BY line_items.occurreddate desc) union ( "
-                    + "select 0 as stockonhand"
-                    + ") "
-                    + "LIMIT 1;");
-
-    return Long.parseLong(query.setParameter(START_DATE, startDate)
-            .setParameter(ORDERABLE, orderable)
-            .setParameter(FACILITY, facility)
-            .getSingleResult().toString());
-  }
-
-  /**
-   * Retrieves closing balance from stockmanagement for a given period.
-   */
-  public Long findClosingBalance(@Param(END_DATE) ZonedDateTime endDate,
-                                   @Param(ORDERABLE) String orderable,
-                                   @Param(FACILITY) String facility) {
-    Query query = entityManager.createNativeQuery(
-            "(SELECT cal.stockonhand "
-                    + "FROM stockmanagement.stock_card_line_items AS line_items "
-                    + "JOIN stockmanagement.stock_cards AS cards "
-                    + "ON line_items.stockcardid = cards.id "
-                    + "JOIN stockmanagement.stock_card_line_item_reasons AS reasons "
-                    + "ON reasons.id = line_items.reasonid "
-                    + "JOIN stockmanagement.calculated_stocks_on_hand AS cal "
-                    + "ON cal.stockcardid = cards.id "
-                    + "JOIN referencedata.orderables AS products "
-                    + "ON cards.orderableid = products.id "
-                    + "JOIN referencedata.facilities AS facilities "
-                    + "ON facilities.id = cards.facilityid "
-                    + "WHERE products.versionnumber = ( "
-                    + "SELECT MAX(versionnumber) FROM referencedata.orderables o2 "
-                    + "WHERE o2.id = products.id "
-                    + ") "
-                    + "AND line_items.occurreddate <= :endDate "
-                    + "AND products.fullproductname = :orderable "
-                    + "AND facilities.code = :facility "
-                    + "ORDER BY line_items.occurreddate DESC) UNION ("
-                    + "select 0 as stockonhand "
-                    + ") "
-                    + "LIMIT 1;");
-
-    return Long.parseLong(query.setParameter(END_DATE, endDate)
-            .setParameter(ORDERABLE, orderable)
-            .setParameter(FACILITY, facility)
-            .getSingleResult().toString());
-  }
 
   /**
    * Retrieves received amount of products from stockmanagement for a given period.
@@ -232,10 +159,10 @@ public class StockmanagementRepository {
                     + "ON reasons.id = line_items.reasonid "
                     + "join referencedata.orderables products ON products.id = cards.orderableid "
                     + "JOIN referencedata.facilities as facilities "
-                    + "on facilities.id = cards.facilityid"
+                    + "on facilities.id = cards.facilityid "
                     + "where LOWER(reasons.name) LIKE '%damage%' "
-                    + "AND line_items.occurred_date >= :start_date "
-                    + "AND line_items.occurred_date < :end_date "
+                    + "AND line_items.occurreddate >= :startDate "
+                    + "AND line_items.occurreddate < :endDate "
                     + "AND products.fullproductname = :orderable "
                     + "AND facilities.code = :facility "
     );
@@ -262,10 +189,10 @@ public class StockmanagementRepository {
             + "ON reasons.id = line_items.reasonid "
             + "JOIN referencedata.orderables products ON products.id = cards.orderableid "
             + "JOIN referencedata.facilities as facilities "
-            + "on facilities.id = cards.facilityid"
+            + "on facilities.id = cards.facilityid "
             + "WHERE LOWER(reasons.name) LIKE '%expir%' "
-            + "AND line_items.occurred_date >= :start_date "
-            + "AND line_items.occurred_date < :end_date "
+            + "AND line_items.occurreddate >= :startDate "
+            + "AND line_items.occurreddate < :endDate "
             + "AND products.fullproductname = :orderable "
             + "AND facilities.code = :facility"
     );
@@ -292,10 +219,10 @@ public class StockmanagementRepository {
             + "ON reasons.id = line_items.reasonid "
             + "JOIN referencedata.orderables products ON products.id = cards.orderableid "
             + "JOIN referencedata.facilities as facilities "
-            + "on facilities.id = cards.facilityid"
+            + "on facilities.id = cards.facilityid "
             + "WHERE line_items.sourceid is not null "
-            + "AND line_items.occurred_date >= :start_date "
-            + "AND line_items.occurred_date < :end_date "
+            + "AND line_items.occurreddate >= :startDate "
+            + "AND line_items.occurreddate < :endDate "
             + "AND products.fullproductname = :orderable "
             + "AND facilities.code = :facility"
     );
@@ -322,10 +249,38 @@ public class StockmanagementRepository {
             + "ON reasons.id = line_items.reasonid "
             + "JOIN referencedata.orderables products ON products.id = cards.orderableid "
             + "JOIN referencedata.facilities as facilities "
-            + "on facilities.id = cards.facilityid"
+            + "on facilities.id = cards.facilityid "
             + "WHERE line_items.destinationid is not null "
-            + "AND line_items.occurred_date >= :start_date "
-            + "AND line_items.occurred_date < :end_date "
+            + "AND line_items.occurreddate >= :startDate "
+            + "AND line_items.occurreddate < :endDate "
+            + "AND products.fullproductname = :orderable "
+            + "AND facilities.code = :facility"
+    );
+    return Double.parseDouble(query.setParameter(START_DATE, startDate)
+        .setParameter(END_DATE, endDate)
+        .setParameter(ORDERABLE, orderable)
+        .setParameter(FACILITY, facility)
+        .getSingleResult().toString());
+  }
+
+  /**
+   * Retrieves sum of all consumed commodities for a given period.
+   */
+  public Double findConsumed(@Param(START_DATE) ZonedDateTime startDate,
+                                 @Param(END_DATE) ZonedDateTime endDate,
+                                 @Param(ORDERABLE) String orderable,
+                                 @Param(FACILITY) String facility) {
+    Query query = entityManager.createNativeQuery(
+        "select COALESCE(SUM(line_items.quantity), 0)  AS quantity "
+            + "FROM stockmanagement.stock_card_line_items line_items "
+            + "JOIN stockmanagement.stock_cards cards ON cards.id = line_items.stockcardid "
+            + "JOIN stockmanagement.stock_card_line_item_reasons reasons ON "
+            + "reasons.id = line_items.reasonid "
+            + "JOIN referencedata.orderables products ON products.id = cards.orderableid "
+            + "JOIN referencedata.facilities as facilities on facilities.id = cards.facilityid "
+            + "WHERE reasons.name = 'Consumed' "
+            + "AND line_items.occurreddate >= :startDate "
+            + "AND line_items.occurreddate < :endDate "
             + "AND products.fullproductname = :orderable "
             + "AND facilities.code = :facility"
     );
