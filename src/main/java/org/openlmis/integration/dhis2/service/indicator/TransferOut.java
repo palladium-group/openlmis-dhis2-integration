@@ -22,7 +22,7 @@ import java.math.MathContext;
 import java.time.ZonedDateTime;
 import org.openlmis.integration.dhis2.domain.enumerator.IndicatorEnum;
 import org.openlmis.integration.dhis2.exception.ValidationMessageException;
-import org.openlmis.integration.dhis2.repository.indicator.StockmanagementRepository;
+import org.openlmis.integration.dhis2.repository.indicator.StockAdjustmentsAndTransfersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class TransferOut implements IndicatorSupplier {
   public static final String NAME = IndicatorEnum.TRANSFER_OUT.toString();
 
   @Autowired
-  private StockmanagementRepository stockmanagementRepository;
+  private StockAdjustmentsAndTransfersRepository stockAdjustmentsAndTransfersRepository;
 
   public String getIndicatorName() {
     return NAME;
@@ -48,7 +48,7 @@ public class TransferOut implements IndicatorSupplier {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator =
-          stockmanagementRepository.findTransferOuts(period.getFirst(), period.getSecond(),
+          stockAdjustmentsAndTransfersRepository.findTransferOuts(period.getFirst(), period.getSecond(),
               orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);

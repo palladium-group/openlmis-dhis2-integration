@@ -24,7 +24,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class StockmanagementRepository {
+public class StockAdjustmentsAndTransfersRepository {
 
   static final String START_DATE = "startDate";
   static final String END_DATE = "endDate";
