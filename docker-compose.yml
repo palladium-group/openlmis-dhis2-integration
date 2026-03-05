@@ -2,7 +2,7 @@ version: "2"
 services:
 
   dhis2-integration:
-    image: palladium/dhis2-integration
+    image: elmislesotho/dhis2-integration:${IMAGE_TAG:-latest}
     env_file: .env
     ports:
       - "8080:8080"
