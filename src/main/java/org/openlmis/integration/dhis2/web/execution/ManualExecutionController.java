@@ -72,12 +72,16 @@ public class ManualExecutionController extends BaseController {
   /**
    * Run manual execution for certain server, dataset, period mapping and facilities.
    */
-  @PostMapping(params = {"serverId", "datasetId", "periodMappingId"})
+  @PostMapping(params = {"serverId", "datasetId"})
   @ResponseStatus(HttpStatus.OK)
   public void runExecution(@RequestParam(value = "serverId") UUID serverId,
                            @RequestParam(value = "datasetId") UUID datasetId,
                            @RequestParam(value = "periodMappingId", required = false)
                                UUID periodMappingId,
+                           @RequestParam(value = "customStartDate", required = false)
+                             String customStartDate,
+                           @RequestParam(value = "customEndDate", required = false)
+                             String customEndDate,
                            @RequestBody(required = false) FacilityCodesWrapper facilityCodes) {
     permissionService.canManageDhisIntegration();
     LOGGER.debug("Running manual execution");
@@ -86,7 +90,8 @@ public class ManualExecutionController extends BaseController {
     List<Schedule> schedules =
         scheduleService.getSchedulesByServerAndDatasetId(serverId, datasetId);
     schedules.forEach(schedule -> processedDataExchangeService.sendData(schedule, periodMappingId,
-        facilityCodes != null ? facilityCodes.getFacilityCodes() : null));
+        facilityCodes != null ? facilityCodes.getFacilityCodes() : null, customStartDate,
+        customEndDate));
   }
 
 }

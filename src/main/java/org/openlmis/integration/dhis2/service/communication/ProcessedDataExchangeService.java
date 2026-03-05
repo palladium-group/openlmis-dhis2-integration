@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class ProcessedDataExchangeService {
@@ -70,7 +71,7 @@ public class ProcessedDataExchangeService {
    * @param schedule given {@link Schedule} object
    */
   public void sendData(Schedule schedule) {
-    sendData(schedule, null, null);
+    sendData(schedule, null, null, null, null);
   }
 
   /**
@@ -80,7 +81,8 @@ public class ProcessedDataExchangeService {
    * @param periodMappingId id of specific {@link PeriodMapping}
    * @param facilityCodes codes of the facilities to be included in data transfer
    */
-  public void sendData(Schedule schedule, UUID periodMappingId, List<String> facilityCodes) {
+  public void sendData(Schedule schedule, UUID periodMappingId, List<String> facilityCodes,
+                       String customStartDate, String customEndDate) {
     DataElement dataElement = schedule.getDataElement();
     final String orderable = dataElement.getOrderable();
     final String categoryOptionCombo = dataElement.getCategoryCombo();
@@ -111,8 +113,12 @@ public class ProcessedDataExchangeService {
                 DEFAULT_DHIS_PERIOD);
       }
     } else {
-      // TODO create a custom range from request params
-      periodRange = periodGeneratorService.generateRange(periodEnum, timeOffset);
+      if (!StringUtils.isEmpty(customStartDate) && !StringUtils.isEmpty(customEndDate)) {
+        periodRange = periodGeneratorService.generateCustomDateRange(customStartDate,
+            customEndDate);
+      } else {
+        periodRange = periodGeneratorService.generateRange(periodEnum, timeOffset);
+      }
       formattedStartDate = periodGeneratorService.formatDate(periodRange.getFirst(), periodEnum);
     }
 
