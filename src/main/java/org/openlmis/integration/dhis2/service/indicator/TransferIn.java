@@ -48,8 +48,8 @@ public class TransferIn implements IndicatorSupplier {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator =
-          stockAdjustmentsAndTransfersRepository.findTransferIns(period.getFirst(), period.getSecond(),
-              orderable, facility);
+          stockAdjustmentsAndTransfersRepository.findTransferIns(period.getFirst(),
+              period.getSecond(), orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }

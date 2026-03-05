@@ -48,8 +48,8 @@ public class TransferOut implements IndicatorSupplier {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator =
-          stockAdjustmentsAndTransfersRepository.findTransferOuts(period.getFirst(), period.getSecond(),
-              orderable, facility);
+          stockAdjustmentsAndTransfersRepository.findTransferOuts(period.getFirst(),
+              period.getSecond(), orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }

@@ -48,8 +48,8 @@ public class Expiries implements IndicatorSupplier {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator =
-          stockAdjustmentsAndTransfersRepository.findExpired(period.getFirst(), period.getSecond(), orderable,
-              facility);
+          stockAdjustmentsAndTransfersRepository.findExpired(period.getFirst(), period.getSecond(),
+              orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }

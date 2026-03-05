@@ -48,8 +48,8 @@ public class Damaged implements IndicatorSupplier {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator =
-          stockAdjustmentsAndTransfersRepository.findDamaged(period.getFirst(), period.getSecond(), orderable,
-              facility);
+          stockAdjustmentsAndTransfersRepository.findDamaged(period.getFirst(), period.getSecond(),
+              orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
