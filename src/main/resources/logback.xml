@@ -21,7 +21,7 @@
     </logger>
 
     <!-- Define the root logger log level -->
-    <root level="DEBUG">
+    <root level="WARN">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="SYSLOG"/>
     </root>
