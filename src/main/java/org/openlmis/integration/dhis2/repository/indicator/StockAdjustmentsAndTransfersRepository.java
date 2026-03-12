@@ -278,7 +278,7 @@ public class StockAdjustmentsAndTransfersRepository {
             + "reasons.id = line_items.reasonid "
             + "JOIN referencedata.orderables products ON products.id = cards.orderableid "
             + "JOIN referencedata.facilities as facilities on facilities.id = cards.facilityid "
-            + "WHERE reasons.name = 'Consumed' "
+            + "WHERE (reasons.name = 'Consumed' or reasons.name = 'Internal Transfer') "
             + "AND line_items.occurreddate >= :startDate "
             + "AND line_items.occurreddate < :endDate "
             + "AND products.fullproductname ILIKE :orderable "
