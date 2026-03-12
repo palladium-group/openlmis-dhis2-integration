@@ -35,18 +35,20 @@ public class AverageMonthlyConsumption implements IndicatorSupplier {
   @Autowired
   private StockAdjustmentsAndTransfersRepository stockAdjustmentsAndTransfersRepository;
 
-  @Override
+
   public String getIndicatorName() {
     return NAME;
   }
 
-  @Override
+  /**
+   * Calculate average consumed commodities.
+   */
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
-                                   String facility, String orderable) {
+                                   String orderable, String facility) {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
-      calculatedIndicator = stockAdjustmentsAndTransfersRepository.findAverageConsumed(
-           period.getSecond(),  orderable, facility);
+      calculatedIndicator = stockAdjustmentsAndTransfersRepository.findAverageConsumption(
+           period.getFirst(), orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }

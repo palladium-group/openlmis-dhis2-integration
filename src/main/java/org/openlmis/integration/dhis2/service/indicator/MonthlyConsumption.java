@@ -46,7 +46,7 @@ public class MonthlyConsumption implements IndicatorSupplier {
                                    String orderable, String facility) {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
-      calculatedIndicator = stockAdjustmentsAndTransfersRepository.findConsumed(
+      calculatedIndicator = stockAdjustmentsAndTransfersRepository.findConsumption(
           period.getFirst(), period.getSecond(),  orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);

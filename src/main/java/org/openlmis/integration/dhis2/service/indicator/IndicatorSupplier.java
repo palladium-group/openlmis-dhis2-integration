@@ -29,6 +29,6 @@ public interface IndicatorSupplier {
   String getIndicatorName();
 
   BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
-                            String facility, String orderable);
+                            String orderable, String facility);
 
 }

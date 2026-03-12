@@ -17,7 +17,6 @@ package org.openlmis.integration.dhis2.service.schedule;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -98,7 +97,8 @@ public class PeriodGeneratorService {
                                                                     String customEndDate) {
     ZonedDateTime startDate = ZonedDateTime.of(LocalDate.parse(customStartDate).atStartOfDay(),
         ZoneId.systemDefault());
-    ZonedDateTime endDate = ZonedDateTime.of(LocalDate.parse(customEndDate).atTime(LocalTime.MAX),
+    ZonedDateTime endDate = ZonedDateTime.of(LocalDate.parse(customEndDate).plusDays(1)
+            .atStartOfDay(),
         ZoneId.systemDefault());
     return Pair.of(startDate, endDate);
   }

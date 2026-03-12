@@ -44,7 +44,7 @@ public class TransferOut implements IndicatorSupplier {
    */
   @Override
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
-                                   String facility, String orderable) {
+                                   String orderable, String facility) {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator =
