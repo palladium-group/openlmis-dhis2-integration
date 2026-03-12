@@ -84,7 +84,7 @@ public class ManualExecutionController extends BaseController {
                              String customEndDate,
                            @RequestBody(required = false) FacilityCodesWrapper facilityCodes) {
     permissionService.canManageDhisIntegration();
-    LOGGER.debug("Running manual execution");
+    LOGGER.debug("Running manual execution with params");
     sharedFacilitySynchronizer.refreshSharedFacilities();
 
     List<Schedule> schedules =

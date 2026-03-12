@@ -39,7 +39,7 @@ import org.springframework.stereotype.Service;
 public class DynamicCronScheduler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DynamicCronScheduler.class);
-  private static final String FACILITY_REFRESH_CRON = "0 20 * * * *";
+  private static final String FACILITY_REFRESH_CRON = "0 0 20 * * *";
 
   private final Map<UUID, ScheduledFuture<?>> scheduledProcesses = new HashMap<>();
 
