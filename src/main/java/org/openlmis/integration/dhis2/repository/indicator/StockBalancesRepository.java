@@ -59,7 +59,7 @@ public class StockBalancesRepository {
             + "WHERE o2.id = products.id "
             + ") "
             + "AND line_items.occurreddate <= :startDate "
-            + "AND products.fullproductname ILIKE :orderable  "
+            + "AND products.code ILIKE :orderable  "
             + "AND facilities.code = :facility "
             + "ORDER BY line_items.occurreddate desc) union ( "
             + "select 0 as stockonhand"
@@ -67,7 +67,7 @@ public class StockBalancesRepository {
             + "LIMIT 1;");
 
     return Long.parseLong(query.setParameter(START_DATE, startDate)
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE,  orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
@@ -96,7 +96,7 @@ public class StockBalancesRepository {
             + "WHERE o2.id = products.id "
             + ") "
             + "AND line_items.occurreddate <= :endDate "
-            + "AND products.fullproductname ILIKE :orderable "
+            + "AND products.code ILIKE :orderable "
             + "AND facilities.code = :facility "
             + "ORDER BY line_items.occurreddate DESC) UNION ("
             + "select 0 as stockonhand "
@@ -104,7 +104,7 @@ public class StockBalancesRepository {
             + "LIMIT 1;");
 
     return Long.parseLong(query.setParameter(END_DATE, endDate)
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE,  orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
@@ -133,7 +133,7 @@ public class StockBalancesRepository {
             + "WHERE o2.id = products.id "
             + ") "
             + "AND line_items.occurreddate <= :currentDate "
-            + "AND products.fullproductname ILIKE :orderable "
+            + "AND products.code ILIKE :orderable "
             + "AND facilities.code = :facility "
             + "ORDER BY line_items.occurreddate DESC) UNION ("
             + "select 0 as stockonhand "
@@ -141,7 +141,7 @@ public class StockBalancesRepository {
             + "LIMIT 1;");
 
     return Long.parseLong(query.setParameter(CURRENT_DATE, currentDate)
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE,  orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
