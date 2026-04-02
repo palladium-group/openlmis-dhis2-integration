@@ -68,12 +68,12 @@ public class StockAdjustmentsAndTransfersRepository {
                     + "AND reasons.reasontype = 'CREDIT' "
                     + "AND line_items.occurreddate >= :startDate "
                     + "AND line_items.occurreddate < :endDate "
-                    + "AND products.fullproductname ILIKE :orderable  "
+                    + "AND products.code ILIKE :orderable  "
                     + "AND facilities.code = :facility ");
 
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
             .setParameter(END_DATE, endDate)
-            .setParameter(ORDERABLE, "%" + orderable + "%")
+            .setParameter(ORDERABLE, orderable + "%")
             .setParameter(FACILITY, facility)
             .getSingleResult().toString());
   }
@@ -104,12 +104,12 @@ public class StockAdjustmentsAndTransfersRepository {
                     + "AND reasons.reasontype = 'CREDIT' "
                     + "AND line_items.occurreddate >= :startDate "
                     + "AND line_items.occurreddate < :endDate "
-                    + "AND products.fullproductname ILIKE :orderable  "
+                    + "AND products.code ILIKE :orderable  "
                     + "AND facilities.code = :facility ");
 
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
             .setParameter(END_DATE, endDate)
-            .setParameter(ORDERABLE, "%" + orderable + "%")
+            .setParameter(ORDERABLE, orderable + "%")
             .setParameter(FACILITY, facility)
             .getSingleResult().toString());
   }
@@ -140,12 +140,12 @@ public class StockAdjustmentsAndTransfersRepository {
                     + "AND reasons.reasontype = 'DEBIT' "
                     + "AND line_items.occurreddate >= :startDate "
                     + "AND line_items.occurreddate < :endDate "
-                    + "AND products.fullproductname ILIKE :orderable  "
+                    + "AND products.code ILIKE :orderable  "
                     + "AND facilities.code = :facility ");
 
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
             .setParameter(END_DATE, endDate)
-            .setParameter(ORDERABLE, "%" + orderable + "%")
+            .setParameter(ORDERABLE, orderable + "%")
             .setParameter(FACILITY, facility)
             .getSingleResult().toString());
   }
@@ -170,12 +170,12 @@ public class StockAdjustmentsAndTransfersRepository {
                     + "where LOWER(reasons.name) LIKE '%damage%' "
                     + "AND line_items.occurreddate >= :startDate "
                     + "AND line_items.occurreddate < :endDate "
-                    + "AND products.fullproductname ILIKE :orderable "
+                    + "AND products.code ILIKE :orderable "
                     + "AND facilities.code = :facility "
     );
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
             .setParameter(END_DATE, endDate)
-            .setParameter(ORDERABLE, "%" + orderable + "%")
+            .setParameter(ORDERABLE, orderable + "%")
             .setParameter(FACILITY, facility)
             .getSingleResult().toString());
   }
@@ -200,12 +200,12 @@ public class StockAdjustmentsAndTransfersRepository {
             + "WHERE LOWER(reasons.name) LIKE '%expir%' "
             + "AND line_items.occurreddate >= :startDate "
             + "AND line_items.occurreddate < :endDate "
-            + "AND products.fullproductname ILIKE :orderable "
+            + "AND products.code ILIKE :orderable "
             + "AND facilities.code = :facility"
     );
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
         .setParameter(END_DATE, endDate)
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE, orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
@@ -230,12 +230,12 @@ public class StockAdjustmentsAndTransfersRepository {
             + "WHERE line_items.sourceid is not null "
             + "AND line_items.occurreddate >= :startDate "
             + "AND line_items.occurreddate < :endDate "
-            + "AND products.fullproductname ILIKE :orderable "
+            + "AND products.code ILIKE :orderable "
             + "AND facilities.code = :facility"
     );
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
         .setParameter(END_DATE, endDate)
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE, orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
@@ -260,12 +260,12 @@ public class StockAdjustmentsAndTransfersRepository {
             + "WHERE line_items.destinationid is not null "
             + "AND line_items.occurreddate >= :startDate "
             + "AND line_items.occurreddate < :endDate "
-            + "AND products.fullproductname ILIKE :orderable "
+            + "AND products.code ILIKE :orderable "
             + "AND facilities.code = :facility"
     );
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
         .setParameter(END_DATE, endDate)
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE, orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
@@ -288,12 +288,12 @@ public class StockAdjustmentsAndTransfersRepository {
             + "WHERE (reasons.name = 'Consumed' or reasons.name = 'Internal Transfer') "
             + "AND line_items.occurreddate >= :startDate "
             + "AND line_items.occurreddate < :endDate "
-            + "AND products.fullproductname ILIKE :orderable "
+            + "AND products.code ILIKE :orderable "
             + "AND facilities.code = :facility"
     );
     return Double.parseDouble(query.setParameter(START_DATE, startDate)
         .setParameter(END_DATE, endDate)
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE, orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
@@ -319,11 +319,11 @@ public class StockAdjustmentsAndTransfersRepository {
             + "AND line_items.occurreddate >="
             + " (date_trunc('month', cast(:startDate as date)) - interval '3 months') "
             + "AND line_items.occurreddate < date_trunc('month', cast(:startDate as date)) "
-            + "AND products.fullproductname ILIKE :orderable "
+            + "AND products.code ILIKE :orderable "
             + "AND facilities.code = :facility"
     );
     return Double.parseDouble(query.setParameter(START_DATE, startDate.toLocalDate())
-        .setParameter(ORDERABLE, "%" + orderable + "%")
+        .setParameter(ORDERABLE, orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
   }
