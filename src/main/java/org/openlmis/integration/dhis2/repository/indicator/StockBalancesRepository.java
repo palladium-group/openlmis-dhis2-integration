@@ -16,6 +16,7 @@
 package org.openlmis.integration.dhis2.repository.indicator;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -116,34 +117,34 @@ public class StockBalancesRepository {
                               @Param(ORDERABLE) String orderable,
                               @Param(FACILITY) String facility) {
     Query query = entityManager.createNativeQuery(
-        "(SELECT cal.stockonhand "
-            + "FROM stockmanagement.stock_card_line_items AS line_items "
-            + "JOIN stockmanagement.stock_cards AS cards "
-            + "ON line_items.stockcardid = cards.id "
-            + "JOIN stockmanagement.stock_card_line_item_reasons AS reasons "
-            + "ON reasons.id = line_items.reasonid "
-            + "JOIN stockmanagement.calculated_stocks_on_hand AS cal "
-            + "ON cal.stockcardid = cards.id "
-            + "JOIN referencedata.orderables AS products "
-            + "ON cards.orderableid = products.id "
-            + "JOIN referencedata.facilities AS facilities "
-            + "ON facilities.id = cards.facilityid "
-            + "WHERE products.versionnumber = ( "
-            + "SELECT MAX(versionnumber) FROM referencedata.orderables o2 "
-            + "WHERE o2.id = products.id "
-            + ") "
-            + "AND line_items.occurreddate <= :currentDate "
-            + "AND products.code ILIKE :orderable "
-            + "AND facilities.code = :facility "
-            + "ORDER BY line_items.occurreddate DESC) UNION ("
-            + "select 0 as stockonhand "
-            + ") "
-            + "LIMIT 1;");
-
-    return Long.parseLong(query.setParameter(CURRENT_DATE, currentDate)
-        .setParameter(ORDERABLE,  orderable + "%")
+        "SELECT COALESCE(Sum(latest_soh.stockonhand), 0) AS stockonhand "
+            + "FROM referencedata.facilities f "
+            + "JOIN referencedata.orderables o "
+            + "ON o.code ilike :orderable "
+            + "LEFT JOIN stockmanagement.stock_cards sc "
+            + "ON sc.facilityid = f.id "
+            + "AND sc.orderableid = o.id "
+            + "AND sc.isactive = true "
+            + "LEFT JOIN lateral "
+            + "(SELECT csoh.stockonhand,"
+            + "csoh.occurreddate,"
+            + "csoh.processeddate "
+            + "FROM stockmanagement.calculated_stocks_on_hand csoh "
+            + "WHERE csoh.stockcardid = sc.id "
+            + "AND csoh.occurreddate <= :currentDate "
+            + "ORDER BY csoh.occurreddate DESC,"
+            + "csoh.processeddate DESC limit 1) latest_soh "
+            + "ON true "
+            + "WHERE f.code = :facility "
+            + "GROUP BY f.code,f.name,"
+            + "(SPLIT_PART(o.code, '-', 1) || '-' || SPLIT_PART(o.code, '-', 2));");
+    List<?> results = query.setParameter(CURRENT_DATE, currentDate)
+        .setParameter(ORDERABLE, orderable + "%")
         .setParameter(FACILITY, facility)
-        .getSingleResult().toString());
+        .getResultList();
+    if (results == null || results.isEmpty()) {
+      return 0L;
+    }
+    return Long.parseLong(results.get(0).toString());
   }
-
 }

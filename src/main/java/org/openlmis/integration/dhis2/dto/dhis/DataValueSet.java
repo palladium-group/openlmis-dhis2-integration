@@ -36,7 +36,6 @@ public class DataValueSet {
 
   private String dataSet;
   private String period;
-  private String orgUnit;
   private List<DataValue> dataValues;
 
 }

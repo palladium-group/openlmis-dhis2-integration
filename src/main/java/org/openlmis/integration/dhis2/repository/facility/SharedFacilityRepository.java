@@ -15,6 +15,7 @@
 
 package org.openlmis.integration.dhis2.repository.facility;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.javers.spring.annotation.JaversSpringDataAuditable;
@@ -51,4 +52,6 @@ public interface SharedFacilityRepository extends PagingAndSortingRepository<Sha
       + "where sf.code = :code and sf.server.id = :serverId")
   Optional<SharedFacility> findByCodeAndServerId(@Param("code") String code,
                                                  @Param("serverId") UUID serverId);
+
+  List<SharedFacility> findByServerId(UUID serverId);
 }

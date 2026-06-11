@@ -17,7 +17,7 @@ package org.openlmis.integration.dhis2.service.communication;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -122,8 +122,7 @@ public class ProcessedDataExchangeService {
       formattedStartDate = periodGeneratorService.formatDate(periodRange.getFirst(), periodEnum);
     }
 
-    List<String> orgUnits = sharedFacilityRepository.findAll().stream()
-            .filter(sf -> serverId.equals(sf.getServer().getId()))
+    List<String> orgUnits = sharedFacilityRepository.findByServerId(serverId).stream()
             .map(SharedFacility::getCode)
             .collect(Collectors.toList());
 
@@ -133,19 +132,23 @@ public class ProcessedDataExchangeService {
               .collect(Collectors.toList());
     }
 
-    for (String orgUnit: orgUnits) {
+    if (orgUnits.isEmpty()) {
+      return;
+    }
+
+    List<DataValue> dataValues = new ArrayList<>(orgUnits.size());
+    for (String orgUnit : orgUnits) {
       final BigDecimal calculatedIndicator = indicatorService.generate(sourceTable,
               indicator, periodRange, orderable, orgUnit);
-
-      DataValue dataValue = buildDataValue(dhisDataElementId, categoryOptionCombo,
-              calculatedIndicator);
-      DataValueSet dataValueSet = buildDataValueSet(dhisDatasetId, formattedStartDate, orgUnit,
-              dataValue);
-      LOGGER.debug("Sending data value set: {}", dataValueSet);
-      DhisResponseBody dhisResponseBody = dhisDataService.sendDataValueSet(dataValueSet,
-              server.getUrl(), server.getUsername(), server.getPassword());
-      LOGGER.debug("DHIS2 response body: {}", dhisResponseBody);
+      dataValues.add(buildDataValue(dhisDataElementId, categoryOptionCombo,
+              calculatedIndicator, orgUnit));
     }
+
+    DataValueSet dataValueSet = buildDataValueSet(dhisDatasetId, formattedStartDate, dataValues);
+    LOGGER.debug("Sending data value set ({} values): {}", dataValues.size(), dataValueSet);
+    DhisResponseBody dhisResponseBody = dhisDataService.sendDataValueSet(dataValueSet,
+            server.getUrl(), server.getUsername(), server.getPassword());
+    LOGGER.debug("DHIS2 response body: {}", dhisResponseBody);
   }
 
   private PeriodMapping getPeriodMapping(UUID periodMappingId) {
@@ -165,21 +168,21 @@ public class ProcessedDataExchangeService {
   }
 
   private DataValue buildDataValue(String dataElement, String categoryOptionCombo,
-                                   BigDecimal value) {
+                                   BigDecimal value, String orgUnit) {
     DataValue dataValue = new DataValue();
     dataValue.setDataElement(dataElement);
     dataValue.setCategoryOptionCombo(categoryOptionCombo);
     dataValue.setValue(value);
+    dataValue.setOrgUnit(orgUnit);
     return dataValue;
   }
 
-  private DataValueSet buildDataValueSet(String dataset, String period, String orgUnit,
-                                         DataValue dataValue) {
+  private DataValueSet buildDataValueSet(String dataset, String period,
+                                         List<DataValue> dataValues) {
     DataValueSet dataValueSet = new DataValueSet();
     dataValueSet.setDataSet(dataset);
     dataValueSet.setPeriod(period);
-    dataValueSet.setOrgUnit(orgUnit);
-    dataValueSet.setDataValues(Collections.singletonList(dataValue));
+    dataValueSet.setDataValues(dataValues);
     return dataValueSet;
   }
 

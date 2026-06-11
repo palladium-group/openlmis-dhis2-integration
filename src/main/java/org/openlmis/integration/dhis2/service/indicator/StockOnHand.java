@@ -19,7 +19,6 @@ import static org.openlmis.integration.dhis2.i18n.MessageKeys.ERROR_ENUMERATOR_N
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.openlmis.integration.dhis2.domain.enumerator.IndicatorEnum;
 import org.openlmis.integration.dhis2.exception.ValidationMessageException;
@@ -46,14 +45,13 @@ public class StockOnHand implements IndicatorSupplier {
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
                                    String orderable, String facility) {
     Long calculatedIndicator;
-    ZonedDateTime currentDate = ZonedDateTime.now(ZoneId.systemDefault());
+    ZonedDateTime currentDate = period.getSecond();
     if (source.equals(STOCKMANAGEMENT)) {
       calculatedIndicator = stockBalancesRepository.findStockOnHand(
           currentDate, orderable, facility);
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
-
     return new BigDecimal(calculatedIndicator.toString(), MathContext.DECIMAL64);
   }
 }
