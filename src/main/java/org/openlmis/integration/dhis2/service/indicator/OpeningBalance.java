@@ -50,7 +50,7 @@ public class OpeningBalance implements IndicatorSupplier {
                                    String orderable, String facility) {
     Long calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
-      calculatedIndicator = stockBalancesRepository.findOpeningBalance(
+      calculatedIndicator = stockBalancesRepository.findStockOnHand(
               period.getFirst(), orderable, facility);
     } else if (source.equals(REQUISITION)) {
       calculatedIndicator = requisitionRepository.findOpeningBalance(
