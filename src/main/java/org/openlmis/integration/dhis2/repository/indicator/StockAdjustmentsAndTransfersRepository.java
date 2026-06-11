@@ -227,7 +227,7 @@ public class StockAdjustmentsAndTransfersRepository {
             + "JOIN referencedata.orderables products ON products.id = cards.orderableid "
             + "JOIN referencedata.facilities as facilities "
             + "on facilities.id = cards.facilityid "
-            + "WHERE line_items.sourceid is not null "
+            + "WHERE reasons.name = 'Transfer In' "
             + "AND line_items.occurreddate >= :startDate "
             + "AND line_items.occurreddate < :endDate "
             + "AND products.code ILIKE :orderable "
