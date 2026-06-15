@@ -15,23 +15,16 @@
 
 package org.openlmis.integration.dhis2.repository.indicator;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.TimeZone;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class StockAdjustmentsAndTransfersRepository {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(StockAdjustmentsAndTransfersRepository.class);
 
   static final String START_DATE = "startDate";
   static final String END_DATE = "endDate";
@@ -301,12 +294,9 @@ public class StockAdjustmentsAndTransfersRepository {
   /**
    * Retrieves the mean of consumed commodities over 3 months.
    */
-  public Double findAverageConsumption(@Param(END_DATE) ZonedDateTime startDate,
+  public Double findAverageConsumption(@Param(START_DATE) ZonedDateTime startDate,
                                        @Param(ORDERABLE) String orderable,
                                        @Param(FACILITY) String facility) {
-    LOGGER.debug("startDate: {}, orderable: {}, facility: {}", startDate, orderable, facility);
-    LOGGER.debug("Current timezone is: {}", TimeZone.getDefault().getID());
-    LOGGER.debug("Current Zone is: {}", ZoneId.systemDefault().getId());
     Query query = entityManager.createNativeQuery(
         "select ROUND((COALESCE(SUM(line_items.quantity), 0)/3), 2) AS quantity "
             + "FROM stockmanagement.stock_card_line_items line_items "
@@ -326,5 +316,15 @@ public class StockAdjustmentsAndTransfersRepository {
         .setParameter(ORDERABLE, orderable + "%")
         .setParameter(FACILITY, facility)
         .getSingleResult().toString());
+  }
+
+  /**
+   * Retrieves the maximum stock quantity (Average monthly consumption x 3).
+   */
+  public Double findMaximumStockQuantity(@Param(START_DATE) ZonedDateTime startDate,
+                                       @Param(ORDERABLE) String orderable,
+                                       @Param(FACILITY) String facility) {
+    Double averageMonthlyConsumption = findAverageConsumption(startDate, orderable, facility);
+    return averageMonthlyConsumption * 3;
   }
 }
