@@ -15,23 +15,16 @@
 
 package org.openlmis.integration.dhis2.repository.indicator;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.TimeZone;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class StockAdjustmentsAndTransfersRepository {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(StockAdjustmentsAndTransfersRepository.class);
 
   static final String START_DATE = "startDate";
   static final String END_DATE = "endDate";

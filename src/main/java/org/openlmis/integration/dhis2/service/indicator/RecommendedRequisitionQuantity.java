@@ -23,17 +23,21 @@ import java.time.ZonedDateTime;
 import org.openlmis.integration.dhis2.domain.enumerator.IndicatorEnum;
 import org.openlmis.integration.dhis2.exception.ValidationMessageException;
 import org.openlmis.integration.dhis2.repository.indicator.StockAdjustmentsAndTransfersRepository;
+import org.openlmis.integration.dhis2.repository.indicator.StockBalancesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MaximumStockQuantity implements IndicatorSupplier {
+public class RecommendedRequisitionQuantity implements IndicatorSupplier {
 
-  public static final String NAME = IndicatorEnum.MAXIMUM_STOCK_QUANTITY.toString();
+  public static final String NAME = IndicatorEnum.RECOMMENDED_REQUISITION_QUANTITY.toString();
 
   @Autowired
   private StockAdjustmentsAndTransfersRepository stockAdjustmentsAndTransfersRepository;
+
+  @Autowired
+  private StockBalancesRepository stockBalancesRepository;
 
 
   public String getIndicatorName() {
@@ -41,14 +45,18 @@ public class MaximumStockQuantity implements IndicatorSupplier {
   }
 
   /**
-   * Retrieves the maximum stock quantity.
+   * Retrieves the recommended requisition quantity stock quantity.
    */
   public BigDecimal calculateValue(String source, Pair<ZonedDateTime, ZonedDateTime> period,
                                    String orderable, String facility) {
     Double calculatedIndicator;
     if (source.equals(STOCKMANAGEMENT)) {
-      calculatedIndicator = stockAdjustmentsAndTransfersRepository
-          .findMaximumStockQuantity(period.getFirst(), orderable, facility);
+      Double maximumStockQuantity =
+          stockAdjustmentsAndTransfersRepository.findMaximumStockQuantity(period.getFirst(),
+              orderable, facility);
+      Long closingBalance = stockBalancesRepository.findStockOnHand(period.getSecond(),
+          orderable, facility);
+      calculatedIndicator = maximumStockQuantity - closingBalance;
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
