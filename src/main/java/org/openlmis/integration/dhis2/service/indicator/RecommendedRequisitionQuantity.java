@@ -56,7 +56,8 @@ public class RecommendedRequisitionQuantity implements IndicatorSupplier {
               orderable, facility);
       Long closingBalance = stockBalancesRepository.findStockOnHand(period.getSecond(),
           orderable, facility);
-      calculatedIndicator = maximumStockQuantity - closingBalance;
+      double recommendedQuantity = maximumStockQuantity - closingBalance;
+      calculatedIndicator = recommendedQuantity >= 0 ? recommendedQuantity : 0;
     } else {
       throw new ValidationMessageException(ERROR_ENUMERATOR_NOT_EXIST);
     }
